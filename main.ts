@@ -1,3 +1,4 @@
+import inquirer from "inquirer";
 import { startSession } from "./application/use-cases/startSession";
 import { makeChoice } from "./application/use-cases/makeChoice";
 import { Story } from "./domain/entities/story";
@@ -28,11 +29,37 @@ const story: Story = {
   ],
 };
 
-let session = startSession(story);
+async function gameLoop() {
+  let session = startSession(story);
 
-console.log("Inicio");
-console.log(session);
+  while (true) {
+    const currentNode = story.nodes.find((n) => n.id === session.currentNodeId);
 
-session = makeChoice(session, story, "1");
-console.log("Escolha:");
-console.log(session);
+    if (!currentNode) {
+      throw new Error("Node não encontrado");
+    }
+
+    console.log("\n" + currentNode.content);
+
+    if (currentNode.choices.length === 0) {
+      console.log("Fim do jogo.");
+      break;
+    }
+
+    const answer = await inquirer.prompt([
+      {
+        type: "list",
+        name: "choiceId",
+        message: "O que você faz?",
+        choices: currentNode.choices.map((c) => ({
+          name: c.text,
+          value: c.id,
+        })),
+      },
+    ]);
+
+    session = makeChoice(session, story, answer.choiceId);
+  }
+}
+
+gameLoop();
