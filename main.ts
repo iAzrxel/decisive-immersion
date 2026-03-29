@@ -2,6 +2,7 @@ import inquirer from "inquirer";
 import { startSession } from "./application/use-cases/startSession";
 import { makeChoice } from "./application/use-cases/makeChoice";
 import { storyGame } from "./application/storygame/storygame";
+import { checkConditions } from "./application/use-cases/checkConditions";
 
 async function gameLoop() {
   let session = startSession(storyGame);
@@ -25,19 +26,7 @@ async function gameLoop() {
     const availableChoices = currentNode.choices.filter((choice) => {
       if (!choice.conditions) return true;
 
-      if (choice.conditions.hasItem) {
-        if (!session.inventory.includes(choice.conditions.hasItem)) {
-          return false;
-        }
-      }
-
-      if (choice.conditions.hasFlag) {
-        if (!session.inventory.includes(choice.conditions.hasFlag)) {
-          return false;
-        }
-      }
-
-      return true;
+      return checkConditions(session, choice.conditions);
     });
 
     const answer = await inquirer.prompt([
