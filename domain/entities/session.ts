@@ -6,4 +6,6 @@ export interface Session {
     nodeId: string;
     choiceId: string;
   }[];
+
+  inventory: string[];
 }

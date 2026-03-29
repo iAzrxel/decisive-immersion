@@ -1,39 +1,15 @@
 import inquirer from "inquirer";
 import { startSession } from "./application/use-cases/startSession";
 import { makeChoice } from "./application/use-cases/makeChoice";
-import { Story } from "./domain/entities/story";
-
-const story: Story = {
-  id: "1",
-  title: "Teste",
-  startNodeId: "start",
-  nodes: [
-    {
-      id: "start",
-      content: "Você está em uma sala escura.",
-      choices: [
-        { id: "1", text: "Abrir a porta", nextNodeId: "door" },
-        { id: "2", text: "Subir a escada", nextNodeId: "stairs" },
-      ],
-    },
-    {
-      id: "door",
-      content: "Algo te observa...",
-      choices: [],
-    },
-    {
-      id: "stairs",
-      content: "Você escapou!",
-      choices: [],
-    },
-  ],
-};
+import { storyGame } from "./application/storygame/storygame";
 
 async function gameLoop() {
-  let session = startSession(story);
+  let session = startSession(storyGame);
 
   while (true) {
-    const currentNode = story.nodes.find((n) => n.id === session.currentNodeId);
+    const currentNode = storyGame.nodes.find(
+      (n) => n.id === session.currentNodeId,
+    );
 
     if (!currentNode) {
       throw new Error("Node não encontrado");
@@ -46,19 +22,27 @@ async function gameLoop() {
       break;
     }
 
+    const availableChoices = currentNode.choices.filter((choice) => {
+      if (!choice.conditions) return true;
+
+      if (choice.conditions.hasItem) {
+        return session.inventory.includes(choice.conditions.hasItem);
+      }
+    });
+
     const answer = await inquirer.prompt([
       {
         type: "list",
         name: "choiceId",
         message: "O que você faz?",
-        choices: currentNode.choices.map((c) => ({
+        choices: availableChoices.map((c) => ({
           name: c.text,
           value: c.id,
         })),
       },
     ]);
 
-    session = makeChoice(session, story, answer.choiceId);
+    session = makeChoice(session, storyGame, answer.choiceId);
   }
 }
 

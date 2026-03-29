@@ -20,9 +20,18 @@ export function makeChoice(
     throw new Error("Escolha invalida");
   }
 
+  let newInventory = [...session.inventory];
+
+  if (choice.effects?.addItem) {
+    if (!newInventory.includes(choice.effects.addItem)) {
+      newInventory.push(choice.effects.addItem);
+    }
+  }
+
   return {
     ...session,
     currentNodeId: choice.nextNodeId,
+    inventory: newInventory,
     history: [
       ...session.history,
       {

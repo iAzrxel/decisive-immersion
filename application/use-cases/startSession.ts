@@ -8,5 +8,6 @@ export function startSession(story: Story): Session {
     storyId: story.id,
     currentNodeId: story.startNodeId,
     history: [],
+    inventory: [],
   };
 }
