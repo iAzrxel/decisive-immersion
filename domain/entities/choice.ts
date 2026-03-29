@@ -5,9 +5,11 @@ export interface Choice {
 
   conditions?: {
     hasItem?: string;
+    hasFlag?: string;
   };
 
   effects?: {
     addItem?: string;
+    addFlag?: string;
   };
 }

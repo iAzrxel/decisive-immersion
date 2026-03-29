@@ -26,8 +26,18 @@ async function gameLoop() {
       if (!choice.conditions) return true;
 
       if (choice.conditions.hasItem) {
-        return session.inventory.includes(choice.conditions.hasItem);
+        if (!session.inventory.includes(choice.conditions.hasItem)) {
+          return false;
+        }
       }
+
+      if (choice.conditions.hasFlag) {
+        if (!session.inventory.includes(choice.conditions.hasFlag)) {
+          return false;
+        }
+      }
+
+      return true;
     });
 
     const answer = await inquirer.prompt([

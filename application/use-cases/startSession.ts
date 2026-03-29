@@ -9,5 +9,6 @@ export function startSession(story: Story): Session {
     currentNodeId: story.startNodeId,
     history: [],
     inventory: [],
+    flags: [],
   };
 }

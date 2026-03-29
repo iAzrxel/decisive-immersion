@@ -8,4 +8,5 @@ export interface Session {
   }[];
 
   inventory: string[];
+  flags: string[];
 }

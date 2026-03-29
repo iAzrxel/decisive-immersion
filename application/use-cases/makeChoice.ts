@@ -28,10 +28,19 @@ export function makeChoice(
     }
   }
 
+  let newFlags = [...session.flags];
+
+  if (choice.effects?.addFlag) {
+    if (!newFlags.includes(choice.effects.addFlag)) {
+      newFlags.push(choice.effects.addFlag);
+    }
+  }
+
   return {
     ...session,
     currentNodeId: choice.nextNodeId,
     inventory: newInventory,
+    flags: newFlags,
     history: [
       ...session.history,
       {
