@@ -3,9 +3,15 @@ import { startSession } from "./application/use-cases/startSession";
 import { makeChoice } from "./application/use-cases/makeChoice";
 import { storyGame } from "./application/storygame/storygame";
 import { checkConditions } from "./application/use-cases/checkConditions";
+import { SessionRepositoryMongo } from "./infra/database/repositories/sessionRepositoryMongo";
+import { connectDB } from "./infra/database/mongoose";
 
 async function gameLoop() {
+  await connectDB();
+  const repository = new SessionRepositoryMongo();
+
   let session = startSession(storyGame);
+  await repository.create(session);
 
   while (true) {
     const currentNode = storyGame.nodes.find(
@@ -42,6 +48,7 @@ async function gameLoop() {
     ]);
 
     session = makeChoice(session, storyGame, answer.choiceId);
+    await repository.update(session);
   }
 }
 
